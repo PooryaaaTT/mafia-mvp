@@ -1,44 +1,75 @@
 <!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mafia MVP</title><style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#262936,#0d0f14 48%);color:#fff;font-family:Tahoma,Arial;padding:20px}.w{max-width:980px;margin:auto}.c{background:#181b22f5;border:1px solid #303541;border-radius:24px;padding:22px;margin-bottom:16px;box-shadow:0 22px 70px #0008}h1{margin:0 0 6px;font-size:36px}.muted{color:#9ea5b2}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}input,button,select{width:100%;padding:13px 14px;border-radius:13px;border:1px solid #343946;font-size:15px;margin:6px 0}input,select{background:#10131a;color:#fff}button{font-weight:800;cursor:pointer}.red{background:#e5484d;color:#fff}.hide{display:none}.avatars{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin:12px 0}.av{font-size:30px;background:#11151b;border:2px solid transparent}.av.sel{border-color:#e5484d;background:#242833}.roomcode{text-align:center;font-size:36px;font-weight:900;letter-spacing:5px}.link{direction:ltr;word-break:break-all;background:#10131a;padding:10px;border-radius:12px;color:#c8ced9}.phase{text-align:center;font-size:21px;padding:10px}.role{padding:12px;text-align:center;border:1px dashed #666;border-radius:14px;font-size:23px;margin:12px 0}.tablewrap{position:relative;height:520px;margin:12px 0}.table{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48%;height:48%;border-radius:50%;background:radial-gradient(circle,#244a35,#173222 70%);border:10px solid #6f4a2b;box-shadow:inset 0 0 40px #0008,0 20px 45px #0007}.table:after{content:"MAFIA";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;color:#ffffff18;letter-spacing:6px}.seat{position:absolute;width:120px;text-align:center;transform:translate(-50%,-50%)}.face{width:72px;height:72px;border-radius:50%;margin:auto;background:#10131a;border:3px solid #3a404e;display:flex;align-items:center;justify-content:center;font-size:35px;box-shadow:0 8px 20px #0008}.seat.me .face{border-color:#e5484d}.nm{margin-top:6px;font-size:13px}.host{font-size:10px;color:#ff9fa3}.online{font-size:10px;color:#52d273}.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.rbox{background:#11151b;border:1px solid #303541;border-radius:14px;padding:10px}.rbox select{margin:0}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.note{font-size:12px;color:#9ea5b2;line-height:1.8}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#262936,#0d0f14 48%);color:#fff;font-family:Tahoma,Arial;padding:20px}.w{max-width:980px;margin:auto}.c{background:#181b22f5;border:1px solid #303541;border-radius:24px;padding:22px;margin-bottom:16px;box-shadow:0 22px 70px #0008}h1{margin:0 0 6px;font-size:36px}.muted{color:#9ea5b2}.row,.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}input,button,select{width:100%;padding:13px 14px;border-radius:13px;border:1px solid #343946;font-size:15px;margin:6px 0}input,select{background:#10131a;color:#fff}button{font-weight:800;cursor:pointer}.red{background:#e5484d;color:#fff}.green{background:#2e9d63;color:#fff}.hide{display:none}.avatars{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin:12px 0}.av{font-size:30px;background:#11151b;border:2px solid transparent}.av.sel{border-color:#e5484d;background:#242833}.roomcode{text-align:center;font-size:36px;font-weight:900;letter-spacing:5px}.link{direction:ltr;word-break:break-all;background:#10131a;padding:10px;border-radius:12px;color:#c8ced9}.phase{text-align:center;font-size:21px;padding:10px}.announcement{text-align:center;padding:10px;color:#ffd166}.role{padding:12px;text-align:center;border:1px dashed #666;border-radius:14px;font-size:23px;margin:12px 0}.tablewrap{position:relative;height:520px;margin:12px 0}.table{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48%;height:48%;border-radius:50%;background:radial-gradient(circle,#244a35,#173222 70%);border:10px solid #6f4a2b;box-shadow:inset 0 0 40px #0008,0 20px 45px #0007}.table:after{content:"MAFIA";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;color:#ffffff18;letter-spacing:6px}.seat{position:absolute;width:120px;text-align:center;transform:translate(-50%,-50%)}.seat.dead{opacity:.35;filter:grayscale(1)}.face{width:72px;height:72px;border-radius:50%;margin:auto;background:#10131a;border:3px solid #3a404e;display:flex;align-items:center;justify-content:center;font-size:35px;box-shadow:0 8px 20px #0008}.seat.me .face{border-color:#e5484d}.nm{margin-top:6px;font-size:13px}.host{font-size:10px;color:#ff9fa3}.online{font-size:10px;color:#52d273}.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.rbox,.panel{background:#11151b;border:1px solid #303541;border-radius:14px;padding:12px}.actionTargets{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:10px}.target{background:#222733;color:#fff}.target:disabled{opacity:.35}.voicebar{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.note{font-size:12px;color:#9ea5b2;line-height:1.8}
 @media(max-width:700px){.avatars{grid-template-columns:repeat(4,1fr)}.tablewrap{height:430px}.table{width:52%;height:38%}.seat{width:92px}.face{width:58px;height:58px;font-size:28px}.roles{grid-template-columns:1fr 1fr}}
 </style></head><body><div class="w">
 <div class="c" id="home"><h1>MAFIA</h1><div class="muted">اسم و کاراکترت رو انتخاب کن</div><input id="name" placeholder="اسم شما"><div class="avatars" id="avatars"></div><input id="code" placeholder="کد اتاق"><div class="row"><button id="create">ساخت اتاق</button><button id="join">ورود به اتاق</button></div></div>
-<div class="c hide" id="room"><div class="muted">کد اتاق</div><div class="roomcode" id="rc"></div><div class="link" id="link"></div><button id="copy">کپی لینک دعوت</button><div class="phase" id="phase">LOBBY</div><div class="role hide" id="role"></div>
+<div class="c hide" id="room"><div class="muted">کد اتاق</div><div class="roomcode" id="rc"></div><div class="link" id="link"></div><button id="copy">کپی لینک دعوت</button>
+<div class="voicebar"><button class="green" id="voice">🎤 فعال کردن صدا</button><button id="mute" disabled>🔇 میوت</button></div>
+<div class="phase" id="phase">LOBBY</div><div class="announcement" id="announcement"></div><div class="role hide" id="role"></div>
 <div class="tablewrap"><div class="table"></div><div id="seats"></div></div>
-<div id="rolePanel" class="hide"><h3>ترکیب نقش‌ها</h3><div class="muted">فقط میزبان می‌تواند قبل از شروع بازی نقش‌ها را تنظیم کند. نقش‌ها موقع Start تصادفی پخش می‌شوند.</div><div class="roles" id="roles"></div><button id="saveRoles">ذخیره ترکیب نقش‌ها</button></div>
-<div class="controls"><button class="red" id="start">شروع بازی</button><button id="toggle">روز / شب</button></div><div class="note">نسخه فعلی: میز دایره‌ای، انتخاب کاراکتر، ترکیب نقش‌ها و پخش مخفی نقش. اکشن واقعی نقش‌ها و Voice مرحله بعد است.</div></div></div>
+<div id="rolePanel" class="hide"><h3>ترکیب نقش‌ها</h3><div class="muted">نقش‌ها موقع شروع تصادفی پخش می‌شوند.</div><div class="roles" id="roles"></div><button id="saveRoles">ذخیره ترکیب نقش‌ها</button></div>
+<div id="actionPanel" class="panel hide"><h3 id="actionTitle">اکشن</h3><div id="actionHelp" class="muted"></div><div class="actionTargets" id="actionTargets"></div></div>
+<div class="controls"><button class="red" id="start">شروع بازی</button><button id="resolve">اعلام نتیجه مرحله</button></div>
+<div class="note">Voice با WebRTC مستقیم بین بازیکن‌ها برقرار می‌شود. در شب میکروفون‌ها خودکار بسته می‌شوند و اکشن‌ها از پنل انجام می‌شوند.</div></div></div>
+<div id="audios"></div>
 <script src="/socket.io/socket.io.js"></script><script>
-const s=io();let c=null,id=null,ph="lobby",selectedAvatar="🕶️",lastRoom=null;
-const $=x=>document.getElementById(x);
+const s=io();let c=null,id=null,selectedAvatar="🕶️",roomState=null,myState={role:null,alive:true,phase:"lobby"},localStream=null,voiceEnabled=false,manualMute=false;
+const peers=new Map(); const $=x=>document.getElementById(x);
 const avatarList=["🕶️","👨🏻‍💼","👩🏻‍💼","🧔🏻","👩🏻","👨🏽","👩🏼","🥷"];
 $("avatars").innerHTML=avatarList.map((a,i)=>'<button class="av '+(i===0?'sel':'')+'" data-a="'+a+'">'+a+'</button>').join("");
 document.querySelectorAll(".av").forEach(b=>b.onclick=()=>{document.querySelectorAll(".av").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");selectedAvatar=b.dataset.a});
 const q=new URLSearchParams(location.search);if(q.get("room"))$("code").value=q.get("room");
 function enter(x){c=x;$("home").classList.add("hide");$("room").classList.remove("hide");$("rc").textContent=x;const u=location.origin+"/?room="+x;$("link").textContent=u;history.replaceState({},"","?room="+x)}
 $("create").onclick=()=>s.emit("room:create",{name:$("name").value.trim()||"Player",avatar:selectedAvatar},r=>{if(r.ok){id=r.playerId;enter(r.code)}});
-$("join").onclick=()=>{let x=$("code").value.trim();if(!x)return alert("کد اتاق را وارد کن");s.emit("room:join",{code:x,name:$("name").value.trim()||"Player",avatar:selectedAvatar},r=>{if(r.ok){id=r.playerId;enter(r.code)}else alert(r.error)})};
+$("join").onclick=()=>{const x=$("code").value.trim();if(!x)return alert("کد اتاق را وارد کن");s.emit("room:join",{code:x,name:$("name").value.trim()||"Player",avatar:selectedAvatar},r=>{if(r.ok){id=r.playerId;enter(r.code)}else alert(r.error)})};
 $("copy").onclick=async()=>{await navigator.clipboard.writeText($("link").textContent);$("copy").textContent="کپی شد ✓";setTimeout(()=>$("copy").textContent="کپی لینک دعوت",1200)};
 $("start").onclick=()=>s.emit("game:start",{code:c},r=>{if(!r?.ok)alert(r.error)});
-$("toggle").onclick=()=>s.emit("phase:set",{code:c,phase:ph==="night"?"day":"night"});
+$("resolve").onclick=()=>{if(!roomState)return;const ev=roomState.phase==="night"?"night:resolve":"day:resolve";s.emit(ev,{code:c},r=>{if(!r?.ok)alert(r.error)})};
 
-const roleOptions=[
-["godfather","پدرخوانده"],["mafia","مافیای ساده"],["lecter","دکتر لکتر"],["doctor","دکتر"],["detective","کارآگاه"],["sniper","تک‌تیرانداز"],["mayor","شهردار"],["citizen","شهروند"]
-];
-function renderRoles(room){
-  $("roles").innerHTML=room.players.map((p,i)=>'<div class="rbox"><div class="muted">اسلات '+(i+1)+'</div><select data-i="'+i+'">'+roleOptions.map(o=>'<option value="'+o[0]+'" '+(room.roleSetup[i]===o[0]?'selected':'')+'>'+o[1]+'</option>').join("")+'</select></div>').join("");
-}
-$("saveRoles").onclick=()=>{const roles=[...$("roles").querySelectorAll("select")].map(x=>x.value);s.emit("roles:set",{code:c,roles},r=>{if(!r?.ok)alert(r.error);else alert("ترکیب نقش‌ها ذخیره شد")})};
+const roleOptions=[["godfather","پدرخوانده"],["mafia","مافیای ساده"],["lecter","دکتر لکتر"],["doctor","دکتر"],["detective","کارآگاه"],["sniper","تک‌تیرانداز"],["mayor","شهردار"],["citizen","شهروند"]];
+function renderRoles(room){$("roles").innerHTML=room.players.map((p,i)=>'<div class="rbox"><div class="muted">اسلات '+(i+1)+'</div><select data-i="'+i+'">'+roleOptions.map(o=>'<option value="'+o[0]+'" '+(room.roleSetup[i]===o[0]?'selected':'')+'>'+o[1]+'</option>').join("")+'</select></div>').join("")}
+$("saveRoles").onclick=()=>{const roles=[...$("roles").querySelectorAll("select")].map(x=>x.value);s.emit("roles:set",{code:c,roles},r=>alert(r?.ok?"ترکیب ذخیره شد":r.error))};
 
 function renderSeats(room){
-  const n=room.players.length,box=$("seats");box.innerHTML="";
-  room.players.forEach((p,i)=>{
-    const ang=(-90+(360/n)*i)*Math.PI/180;
-    const rx=42, ry=38;
-    const left=50+Math.cos(ang)*rx, top=50+Math.sin(ang)*ry;
-    const d=document.createElement("div");d.className="seat"+(p.id===id?" me":"");d.style.left=left+"%";d.style.top=top+"%";
-    d.innerHTML='<div class="face">'+p.avatar+'</div><div class="nm">'+p.name+'</div>'+(p.host?'<div class="host">HOST</div>':'')+'<div class="online">● آنلاین</div>';box.appendChild(d);
-  });
+ const n=room.players.length,box=$("seats");box.innerHTML="";
+ room.players.forEach((p,i)=>{const ang=(-90+(360/n)*i)*Math.PI/180,left=50+Math.cos(ang)*42,top=50+Math.sin(ang)*38;const d=document.createElement("div");d.className="seat"+(p.id===id?" me":"")+(p.alive?"":" dead");d.style.left=left+"%";d.style.top=top+"%";d.innerHTML='<div class="face">'+p.avatar+'</div><div class="nm">'+p.name+'</div>'+(p.host?'<div class="host">HOST</div>':'')+(p.alive?'<div class="online">● زنده</div>':'<div class="host">حذف شده</div>');box.appendChild(d)});
 }
-s.on("room:update",room=>{lastRoom=room;ph=room.phase;$("phase").textContent=room.started?(room.phase==="night"?"🌙 شب":"☀️ روز"):"LOBBY";renderSeats(room);const me=room.players.find(p=>p.id===id);$("start").style.display=me?.host&&!room.started?"block":"none";$("toggle").style.display=me?.host&&room.started?"block":"none";$("rolePanel").classList.toggle("hide",!(me?.host&&!room.started));if(me?.host&&!room.started)renderRoles(room)});
+function renderAction(){
+ const p=$("actionPanel"),box=$("actionTargets");box.innerHTML="";
+ if(!roomState||!roomState.started||roomState.phase==="ended"||!myState.alive){p.classList.add("hide");return;}
+ const alive=roomState.players.filter(x=>x.alive);let type=null,title="",help="",filter=()=>true;
+ if(roomState.phase==="night"){
+  if(myState.canKill){type="kill";title="🔪 انتخاب هدف مافیا";help="یک بازیکن شهر را برای حذف انتخاب کن";}
+  else if(myState.canDoctor){type="doctor";title="🩺 نجات دکتر";help="یک بازیکن را برای نجات انتخاب کن";}
+  else if(myState.canLecter){type="lecter";title="💉 نجات دکتر لکتر";help="یک عضو مافیا را نجات بده"}
+  else if(myState.canDetect){type="detect";title="🕵️ استعلام کارآگاه";help="یک بازیکن را استعلام بگیر";}
+  else {p.classList.add("hide");return;}
+ }else if(roomState.phase==="day"){type="vote";title="🗳️ رأی‌گیری روز";help="به یک بازیکن برای حذف رأی بده";}
+ else {p.classList.add("hide");return;}
+ p.classList.remove("hide");$("actionTitle").textContent=title;$("actionHelp").textContent=help;
+ alive.forEach(t=>{if(type==="detect"&&t.id===id)return;const b=document.createElement("button");b.className="target";b.textContent=t.avatar+" "+t.name;b.onclick=()=>{if(type==="vote")s.emit("day:vote",{code:c,targetId:t.id},r=>alert(r?.message||r?.error));else s.emit("night:action",{code:c,type,targetId:t.id},r=>alert(r?.message||r?.error))};box.appendChild(b)});
+}
+
+function syncMic(){
+ if(!localStream)return;const night=roomState?.phase==="night";localStream.getAudioTracks().forEach(t=>t.enabled=voiceEnabled&&!manualMute&&!night);$("mute").textContent=(manualMute||night)?"🔊 آن‌میوت":"🔇 میوت";if(night)$("mute").textContent="🌙 شب: میکروفون بسته";
+}
+async function ensurePeer(peerId,makeOffer=false){
+ if(peerId===id||peers.has(peerId)||!localStream)return;
+ const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});peers.set(peerId,pc);
+ localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+ pc.onicecandidate=e=>{if(e.candidate)s.emit("rtc:ice",{to:peerId,candidate:e.candidate})};
+ pc.ontrack=e=>{let a=document.getElementById("a-"+peerId);if(!a){a=document.createElement("audio");a.id="a-"+peerId;a.autoplay=true;$("audios").appendChild(a)}a.srcObject=e.streams[0]};
+ if(makeOffer){const offer=await pc.createOffer();await pc.setLocalDescription(offer);s.emit("rtc:offer",{to:peerId,offer})}
+}
+async function connectPeers(){if(!voiceEnabled||!roomState)return;for(const p of roomState.players)if(p.id!==id)await ensurePeer(p.id,id<p.id)}
+$("voice").onclick=async()=>{try{localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});voiceEnabled=true;$("voice").textContent="🎤 صدا فعال";$("mute").disabled=false;syncMic();connectPeers()}catch(e){alert("دسترسی میکروفون داده نشد")}};
+$("mute").onclick=()=>{if(roomState?.phase==="night")return;manualMute=!manualMute;syncMic()};
+s.on("rtc:offer",async({from,offer})=>{await ensurePeer(from,false);const pc=peers.get(from);await pc.setRemoteDescription(offer);const ans=await pc.createAnswer();await pc.setLocalDescription(ans);s.emit("rtc:answer",{to:from,answer:ans})});
+s.on("rtc:answer",async({from,answer})=>{const pc=peers.get(from);if(pc)await pc.setRemoteDescription(answer)});
+s.on("rtc:ice",async({from,candidate})=>{const pc=peers.get(from);if(pc)try{await pc.addIceCandidate(candidate)}catch(e){}});
+
+s.on("room:update",room=>{roomState=room;$("phase").textContent=room.phase==="night"?"🌙 شب":room.phase==="day"?"☀️ روز":room.phase==="ended"?"🏁 پایان":"LOBBY";$("announcement").textContent=room.announcement||"";renderSeats(room);const me=room.players.find(p=>p.id===id),isHost=!!me?.host;$("start").style.display=isHost&&!room.started?"block":"none";$("resolve").style.display=isHost&&["night","day"].includes(room.phase)?"block":"none";$("resolve").textContent=room.phase==="night"?"اعلام نتیجه شب":"محاسبه رأی روز";$("rolePanel").classList.toggle("hide",!(isHost&&!room.started));if(isHost&&!room.started)renderRoles(room);syncMic();renderAction();connectPeers()});
 s.on("role:assigned",x=>{$("role").classList.remove("hide");$("role").textContent="نقش شما: "+x.label});
+s.on("player:state",x=>{myState=x;renderAction();syncMic()});
+s.on("detective:result",x=>alert("نتیجه استعلام "+x.name+": "+(x.isMafia?"مافیا است":"مافیا نیست")));
 </script></body></html>
