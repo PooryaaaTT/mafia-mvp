@@ -5,7 +5,7 @@ import crypto from "crypto";
 
 const app=express();
 const server=http.createServer(app);
-const io=new Server(server);
+const io=new Server(server,{maxHttpBufferSize:5e6});
 const PORT=process.env.PORT||3000;
 app.use(express.static("public"));
 
@@ -30,11 +30,17 @@ function winner(r){
   if(m>=c)return "mafia";
   return null;
 }
+function defaultRoles(n){
+  const x=["godfather","citizen","doctor","mafia","detective","citizen","lecter","sniper","citizen","mayor","citizen","citizen"];
+  return x.slice(0,n);
+}
 function publicRoom(r){
   return {
     code:r.code, phase:r.phase, started:r.started, round:r.round,
     roleSetup:r.started?[]:r.roleSetup,
     announcement:r.announcement||"", winner:r.winner||null,
+    tableImage:r.tableImage||null,
+    voiceReady:[...(r.voiceReady||new Set())],
     players:r.players.map(p=>({id:p.id,name:p.name,avatar:p.avatar,host:p.host,alive:p.alive}))
   };
 }
@@ -45,18 +51,11 @@ function emitRoom(code){
 }
 function resetNight(r){r.night={kill:null,doctorSave:null,lecterSave:null,checks:{}};}
 function resetVotes(r){r.votes={};}
-function defaultRoles(n){
-  const x=["godfather","citizen","doctor","mafia","detective","citizen","lecter","sniper","citizen","mayor","citizen","citizen"];
-  return x.slice(0,n);
-}
 function sendPrivateState(r){
   for(const p of r.players){
     io.to(p.id).emit("player:state",{
-      role:p.role,
-      roleLabel:ROLE_META[p.role]?.name||"",
-      team:roleTeam(p.role),
-      alive:p.alive,
-      phase:r.phase,
+      role:p.role, roleLabel:ROLE_META[p.role]?.name||"", team:roleTeam(p.role),
+      alive:p.alive, phase:r.phase,
       canKill:r.phase==="night"&&p.alive&&(p.role==="godfather"||(!alive(r).some(x=>x.role==="godfather")&&p.role==="mafia")),
       canDoctor:r.phase==="night"&&p.alive&&p.role==="doctor",
       canLecter:r.phase==="night"&&p.alive&&p.role==="lecter",
@@ -68,7 +67,10 @@ function sendPrivateState(r){
 io.on("connection",s=>{
   s.on("room:create",({name,avatar},cb)=>{
     let code; do{code=mkCode()}while(rooms.has(code));
-    const r={code,phase:"lobby",started:false,round:0,roleSetup:["godfather","citizen"],players:[],announcement:"",winner:null,votes:{}};
+    const r={
+      code,phase:"lobby",started:false,round:0,roleSetup:["godfather","citizen"],
+      players:[],announcement:"",winner:null,votes:{},tableImage:null,voiceReady:new Set()
+    };
     r.players.push({id:s.id,name:(name||"Player").slice(0,24),avatar:avatar||"🕶️",host:true,alive:true,role:null});
     rooms.set(code,r); s.join(code); s.data.room=code;
     cb?.({ok:true,code,playerId:s.id}); emitRoom(code);
@@ -84,6 +86,13 @@ io.on("connection",s=>{
     r.roleSetup=defaultRoles(r.players.length);
     s.join(code); s.data.room=code;
     cb?.({ok:true,code,playerId:s.id}); emitRoom(code);
+  });
+
+  s.on("table:set",({code,image},cb)=>{
+    const r=rooms.get(String(code||"").toUpperCase()), me=r?.players.find(p=>p.id===s.id);
+    if(!r||!me?.host)return cb?.({ok:false,error:"فقط میزبان"});
+    if(typeof image!=="string"||!image.startsWith("data:image/")||image.length>4_000_000)return cb?.({ok:false,error:"تصویر نامعتبر یا خیلی بزرگ است"});
+    r.tableImage=image; emitRoom(r.code); cb?.({ok:true});
   });
 
   s.on("roles:set",({code,roles},cb)=>{
@@ -117,22 +126,26 @@ io.on("connection",s=>{
     if(type==="kill"){
       const hasGodfather=alive(r).some(p=>p.role==="godfather");
       if(!(me.role==="godfather"||(!hasGodfather&&me.role==="mafia")))return cb?.({ok:false,error:"این نقش اجازه شلیک ندارد"});
-      if(roleTeam(target.role)==="mafia")return cb?.({ok:false,error:"نمی‌توانی مافیا را هدف بگیری"});
-      r.night.kill=target.id; cb?.({ok:true,message:"هدف مافیا ثبت شد"});
-    }else if(type==="doctor"){
+      if(roleTeam(target.role)==="mafia")return cb?.({ok:false,error:"نمی‌توانی عضو مافیا را هدف بگیری"});
+      r.night.kill=target.id; return cb?.({ok:true,message:"هدف مافیا ثبت شد"});
+    }
+    if(type==="doctor"){
       if(me.role!=="doctor")return cb?.({ok:false,error:"فقط دکتر"});
-      r.night.doctorSave=target.id; cb?.({ok:true,message:"نجات دکتر ثبت شد"});
-    }else if(type==="lecter"){
+      r.night.doctorSave=target.id; return cb?.({ok:true,message:"نجات دکتر ثبت شد"});
+    }
+    if(type==="lecter"){
       if(me.role!=="lecter")return cb?.({ok:false,error:"فقط دکتر لکتر"});
       if(roleTeam(target.role)!=="mafia")return cb?.({ok:false,error:"لکتر فقط مافیا را نجات می‌دهد"});
-      r.night.lecterSave=target.id; cb?.({ok:true,message:"نجات لکتر ثبت شد"});
-    }else if(type==="detect"){
+      r.night.lecterSave=target.id; return cb?.({ok:true,message:"نجات لکتر ثبت شد"});
+    }
+    if(type==="detect"){
       if(me.role!=="detective")return cb?.({ok:false,error:"فقط کارآگاه"});
       if(target.id===me.id)return cb?.({ok:false,error:"خودت را نمی‌توانی استعلام بگیری"});
       r.night.checks[me.id]=target.id;
       io.to(me.id).emit("detective:result",{targetId:target.id,name:target.name,isMafia:roleTeam(target.role)==="mafia"});
-      cb?.({ok:true,message:"نتیجه استعلام ارسال شد"});
-    }else cb?.({ok:false,error:"اکشن ناشناخته"});
+      return cb?.({ok:true,message:"نتیجه استعلام ارسال شد"});
+    }
+    cb?.({ok:false,error:"اکشن ناشناخته"});
   });
 
   s.on("night:resolve",({code},cb)=>{
@@ -159,7 +172,7 @@ io.on("connection",s=>{
   s.on("day:resolve",({code},cb)=>{
     const r=rooms.get(String(code||"").toUpperCase()), me=r?.players.find(p=>p.id===s.id);
     if(!r||!me?.host||r.phase!=="day")return cb?.({ok:false,error:"فقط میزبان در روز"});
-    const counts={};Object.values(r.votes).forEach(id=>counts[id]=(counts[id]||0)+1);
+    const counts={};Object.values(r.votes).forEach(x=>counts[x]=(counts[x]||0)+1);
     const ranked=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
     let msg="رأی‌گیری بدون حذف تمام شد.";
     if(ranked.length){
@@ -174,12 +187,23 @@ io.on("connection",s=>{
     r.round++;r.phase="night";r.announcement=msg+" — شب "+r.round+" شروع شد.";resetNight(r);resetVotes(r);emitRoom(r.code);sendPrivateState(r);cb?.({ok:true});
   });
 
+  s.on("voice:ready",({code},cb)=>{
+    const r=rooms.get(String(code||"").toUpperCase());
+    if(!r||!r.players.some(p=>p.id===s.id))return cb?.({ok:false});
+    r.voiceReady.add(s.id); emitRoom(r.code); cb?.({ok:true});
+  });
+  s.on("voice:not-ready",({code})=>{
+    const r=rooms.get(String(code||"").toUpperCase());
+    if(r){r.voiceReady.delete(s.id);emitRoom(r.code);}
+  });
+
   s.on("rtc:offer",({to,offer})=>io.to(to).emit("rtc:offer",{from:s.id,offer}));
   s.on("rtc:answer",({to,answer})=>io.to(to).emit("rtc:answer",{from:s.id,answer}));
   s.on("rtc:ice",({to,candidate})=>io.to(to).emit("rtc:ice",{from:s.id,candidate}));
 
   s.on("disconnect",()=>{
     const code=s.data.room,r=rooms.get(code);if(!r)return;
+    r.voiceReady?.delete(s.id);
     const i=r.players.findIndex(p=>p.id===s.id),wasHost=i>=0&&r.players[i].host;
     if(i>=0)r.players.splice(i,1);
     if(!r.players.length)rooms.delete(code);
